@@ -61,6 +61,9 @@ const buttons = {
         cart.splice(0, cart.length);
         actualizarLocalStorageCart();
     },
+    "modal-btn-comprar": (id) => {
+        (cart.length > 0) ? compraFinalizadaConExito() : compraErronea();
+    },
 }
 
 
@@ -75,6 +78,21 @@ const agregarAlCarro = (obj) => {
         obj.cantidad++
     }
     actualizarLocalStorageCart();
+}
+
+const quitarDelCarro = (obj) => {
+   // let existe = cart.some((el) => el.id === obj.id);
+   if (cart[cart.indexOf(obj)].cantidad > 1) {
+    cart[cart.indexOf(obj)].cantidad--;
+    actualizarLocalStorageCart();
+    displayCardsInCart();
+   } else {
+    cart.splice(cart.indexOf(obj), 1);
+    actualizarLocalStorageCart();
+    displayCardsInCart();
+   }
+
+
 }
 
 const actualizarLocalStorageCart = () => {
@@ -217,7 +235,7 @@ const displayCards = (data) => {
 const displayCardsInCart = (data) => {
     const modalBodyDisplay = document.getElementById("modal-body-display"); 
     modalBodyDisplay.innerHTML = "";
-    data.map(recipe =>{
+    cart.map(recipe =>{
         modalBodyDisplay.innerHTML +=            
             `
             <div class="card mb-3" style="max-width: 540px;">
@@ -229,11 +247,17 @@ const displayCardsInCart = (data) => {
                 <div class="card-body">
                   <h5 class="card-title">${recipe.title}</h5>
                   <p class="card-text"><small class="text-muted">Cantidad: ${recipe.cantidad}</small></p>
-                  <a id="btnCompra-${recipe.id}" href="#" class="btn btn-primary align-self-end">Eliminar</a>
+                  <a id="btnEliminar-${recipe.id}" href="#" class="btn btn-primary align-self-end">Eliminar</a>
                 </div>
               </div>
             </div>
-          </div>`
+          </div>` 
+    })
+
+    cart.map(btn => {
+        document.getElementById(`btnEliminar-${btn.id}`).addEventListener("click", e=> {
+            quitarDelCarro(btn)
+        })
     })
 }
 
@@ -243,7 +267,6 @@ document.addEventListener('click', e => {
     if (buttons.hasOwnProperty(e.target.id)) {
         buttons[e.target.id](e.target.id)
     }
-
 })
 
 
@@ -264,6 +287,26 @@ const buttonActiveControl = (id) => {
 })
     document.getElementById(id).classList.remove("btn-dark")
     document.getElementById(id).classList.add("btn-primary")
+}
+
+const compraFinalizadaConExito = () => {
+    // MENSAJE FINALIZACION COMPRA
+    Swal.fire(
+        'Compra realizada con exito!',
+        'Muchas gracias por su compra.',
+        'success'
+    )
+    cart.splice(0, cart.length);
+    actualizarLocalStorageCart();  
+}
+    
+const compraErronea = () => {
+    // MENSAJE ERROR EN COMPRA
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No tiene elementos en el carro de compras',
+      })
 }
 
 
