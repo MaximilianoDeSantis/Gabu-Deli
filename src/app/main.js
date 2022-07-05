@@ -24,35 +24,37 @@ if (checkLocalCart) {
 
 // Funciones de botones pre seteados
 const buttons = {
-    "btn-popular": (id) => {
+    "btn-popular":  async (id)  =>  {
         buttonActiveControl(id)
-        getPopular()
-        displayCards(data)
+        await getPopular()
+        displayCards(data.recipes)
+ 
+// FALTA AGREGAR PROMESAS
     },
-    "btn-vegetariana": (id) => {
+    "btn-vegetariana": async (id)  => {
         buttonActiveControl(id)
-        getVegetarian()
-        displayCards(data)
+        await getVegetarian()
+        displayCards(data.recipes)
     },
-    "btn-italiana": (id) => {
+    "btn-italiana": async (id) => {
         buttonActiveControl(id)
-        getItaliana()
-        displayCards(data)
+        await getItaliana()
+        displayCards(data.results)
     },
-    "btn-americana": (id) => {
+    "btn-americana": async (id) => {
         buttonActiveControl(id)
-        getAmericana()
-        displayCards(data)
+        await getAmericana()
+        displayCards(data.results)
     },
-    "btn-thai": (id) => {
+    "btn-thai": async (id) => {
         buttonActiveControl(id)
-        getThai()
-        displayCards(data)
+        await getThai()
+        displayCards(data.results)
     },
-    "btn-japonesa": (id) => {
+    "btn-japonesa": async (id) => {
         buttonActiveControl(id)
-        getJaponesa()
-        displayCards(data)
+        await getJaponesa()
+        displayCards(data.results)
     },
     "btn-cart": (id) => {
         displayCardsInCart(cart);
@@ -64,6 +66,11 @@ const buttons = {
     "modal-btn-comprar": (id) => {
         (cart.length > 0) ? compraFinalizadaConExito() : compraErronea();
     },
+}
+
+const fetchs = {
+    popular: "asd" ,
+    vegetarian: "asd",
 }
 
 
@@ -105,17 +112,18 @@ const actualizarLocalStorageCart = () => {
 // Fetchs y Guardar en LocalStorage porque la API tiene un maximo diario de peticiones
 const getPopular = async () => {
     const checkLocal = localStorage.getItem('popular');
-
     if (checkLocal) {
        data = JSON.parse(checkLocal)
     }
     else {
         const api = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${APIKEY}&number=9`);
-        data = await api.json();
-        localStorage.setItem('popular', JSON.stringify(data.recipes))
-        console.log("USADA LA API POPULAR")
+        data = await api.json();        
+        localStorage.setItem('popular', JSON.stringify(data))
     }  
 }
+
+
+
 const getVegetarian = async () => {
     const checkLocal = localStorage.getItem('vegetariano');
     if (checkLocal) {
@@ -123,26 +131,19 @@ const getVegetarian = async () => {
     }
     else {
         const api = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${APIKEY}&number=9&tags=vegetarian`);
-
-        
         data = await api.json();
-        
         localStorage.setItem('vegetariano', JSON.stringify(data.recipes))
-        console.log("USADA LA API VEGETARIANO")
     }  
 }
 const getItaliana = async () => {
     const checkLocal = localStorage.getItem('italiana');
     if (checkLocal) {
-
         data = JSON.parse(checkLocal)
-
     }
     else {
         const api = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${APIKEY}&cuisine=Italian`);
         data = await api.json();
         localStorage.setItem('italiana', JSON.stringify(data.results))
-        console.log("USADA LA API ITALIANA")
     }  
 }
 const getAmericana = async () => {
@@ -176,9 +177,7 @@ const getJaponesa = async () => {
     }
     else {
         const api = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${APIKEY}&cuisine=japanese`);
-        console.log(api)
         data = await api.json();
-        console.log(data)
         localStorage.setItem('japonesa', JSON.stringify(data.results))
         console.log("USADA LA API JAPONESA")
     }  
@@ -229,6 +228,7 @@ const displayCards = (data) => {
     else {
         root.innerHTML = `<h2> No se encuentras recetas </h2>`
     }
+
 }
 
 // Muestra en el carro de compras lo seleccionado
